@@ -1,41 +1,40 @@
+# Adventarium. Made by Atulya
 import pygame
-import time
+from level import level1
+from level import level2
 
 pygame.init()
-
 clock = pygame.time.Clock()
 
 pygame.display.set_caption("Adventarium")
 screen = pygame.display.set_mode((1280, 720))
 running = True
 
-background = pygame.image.load("bg.png").convert()
 player_right = pygame.image.load("p_right.png")
-player_right = pygame.transform.scale(player_right, (80,80))
+player_right = pygame.transform.scale(player_right, (80, 80))
+
 shadow = pygame.image.load("shadow.png")
-shadow = pygame.transform.scale(shadow, (90,20))
+shadow = pygame.transform.scale(shadow, (90, 20))
 
-prx = 20
-pry = 20
+keys = pygame.image.load("key.png")
+keys = pygame.transform.scale(keys, (80, 40))
 
-v = 0
-ease = 0.2
-maximum = 5
-target = 0
+player_rect = player_right.get_rect(topleft=(20, 20))
+keys_rect = keys.get_rect(topleft=(150, 347))
 
-vy = 0
-easey = 0.3
-maximumy = 5
-targety = 0
+vx, vy = 0, 0
+ease, easey = 0.2, 0.3
+maximum, maximumy = 5, 5
+target, targety = 0, 0
+
+l1 = level1()
+l2 = level2()
 
 while running:
-
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
-    
-    
 
     key = pygame.key.get_pressed()
     if key[pygame.K_LEFT] or key[pygame.K_a]:
@@ -52,16 +51,26 @@ while running:
     else:
         targety = 0
 
+    if player_rect.colliderect(keys_rect):
+        print("44")
+        l2.update()
+        l2.draw(screen)
+    else:
+        l1.update()
+        l1.draw(screen)
+        print("22")
 
-    v += (target - v) * ease 
-    prx += v
+    vx += (target - vx) * ease
     vy += (targety - vy) * easey
-    pry += vy
+    player_rect.x += vx
+    player_rect.y += vy
 
-    screen.blit(background, (0,0))
-    screen.blit(shadow, (prx - 5, pry + 65))
-    screen.blit(player_right, (prx,pry))
     
+    
+    screen.blit(shadow, (player_rect.x - 5, player_rect.y + 65))
+    screen.blit(player_right, player_rect.topleft)
+    screen.blit(keys, keys_rect.topleft)
+
     pygame.display.flip()
     clock.tick(75)
 
